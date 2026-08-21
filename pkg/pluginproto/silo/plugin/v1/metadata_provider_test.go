@@ -176,6 +176,26 @@ func TestGetImagesRequest_SeasonNumberPreservesPresenceAndSpecials(t *testing.T)
 	}
 }
 
+func TestImageRecord_SeasonNumberPreservesPresenceAndSpecials(t *testing.T) {
+	seasonZero := int32(0)
+	payload, err := proto.Marshal(&ImageRecord{SeasonNumber: &seasonZero})
+	if err != nil {
+		t.Fatalf("marshal image: %v", err)
+	}
+
+	var decoded ImageRecord
+	if err := proto.Unmarshal(payload, &decoded); err != nil {
+		t.Fatalf("unmarshal image: %v", err)
+	}
+	if decoded.SeasonNumber == nil || decoded.GetSeasonNumber() != 0 {
+		t.Fatalf("season_number = %v, want present Specials value 0", decoded.SeasonNumber)
+	}
+	field := decoded.ProtoReflect().Descriptor().Fields().ByName("season_number")
+	if field == nil || field.Number() != 7 {
+		t.Fatalf("season_number descriptor = %v, want field 7", field)
+	}
+}
+
 func TestMetadataProviderServiceDescriptor_IncludesPersonDetailRPC(t *testing.T) {
 	method := File_silo_plugin_v1_metadata_provider_proto.Services().
 		ByName("MetadataProvider").
