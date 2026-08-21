@@ -236,6 +236,10 @@ message GetImagesRequest {
   string item_type = 2;
   google.protobuf.Struct provider_ids = 3;
   string language = 4;
+  // Present only when requesting artwork for a specific TV season.
+  // Season zero represents Specials, so presence must not be inferred from
+  // the numeric value.
+  optional int32 season_number = 5;
 }
 
 message GetImagesResponse {

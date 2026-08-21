@@ -1764,11 +1764,15 @@ func (x *ImageRecord) GetMetadata() *structpb.Struct {
 }
 
 type GetImagesRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ProviderId    string                 `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
-	ItemType      string                 `protobuf:"bytes,2,opt,name=item_type,json=itemType,proto3" json:"item_type,omitempty"`
-	ProviderIds   *structpb.Struct       `protobuf:"bytes,3,opt,name=provider_ids,json=providerIds,proto3" json:"provider_ids,omitempty"`
-	Language      string                 `protobuf:"bytes,4,opt,name=language,proto3" json:"language,omitempty"`
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	ProviderId  string                 `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
+	ItemType    string                 `protobuf:"bytes,2,opt,name=item_type,json=itemType,proto3" json:"item_type,omitempty"`
+	ProviderIds *structpb.Struct       `protobuf:"bytes,3,opt,name=provider_ids,json=providerIds,proto3" json:"provider_ids,omitempty"`
+	Language    string                 `protobuf:"bytes,4,opt,name=language,proto3" json:"language,omitempty"`
+	// Present only when requesting artwork for a specific TV season.
+	// Season zero represents Specials, so presence must not be inferred from
+	// the numeric value.
+	SeasonNumber  *int32 `protobuf:"varint,5,opt,name=season_number,json=seasonNumber,proto3,oneof" json:"season_number,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1829,6 +1833,13 @@ func (x *GetImagesRequest) GetLanguage() string {
 		return x.Language
 	}
 	return ""
+}
+
+func (x *GetImagesRequest) GetSeasonNumber() int32 {
+	if x != nil && x.SeasonNumber != nil {
+		return *x.SeasonNumber
+	}
+	return 0
 }
 
 type GetImagesResponse struct {
@@ -2243,13 +2254,15 @@ const file_silo_plugin_v1_metadata_provider_proto_rawDesc = "" +
 	"\blanguage\x18\x03 \x01(\tR\blanguage\x12\x14\n" +
 	"\x05width\x18\x04 \x01(\x05R\x05width\x12\x16\n" +
 	"\x06height\x18\x05 \x01(\x05R\x06height\x123\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\xa8\x01\n" +
+	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructR\bmetadata\"\xe4\x01\n" +
 	"\x10GetImagesRequest\x12\x1f\n" +
 	"\vprovider_id\x18\x01 \x01(\tR\n" +
 	"providerId\x12\x1b\n" +
 	"\titem_type\x18\x02 \x01(\tR\bitemType\x12:\n" +
 	"\fprovider_ids\x18\x03 \x01(\v2\x17.google.protobuf.StructR\vproviderIds\x12\x1a\n" +
-	"\blanguage\x18\x04 \x01(\tR\blanguage\"H\n" +
+	"\blanguage\x18\x04 \x01(\tR\blanguage\x12(\n" +
+	"\rseason_number\x18\x05 \x01(\x05H\x00R\fseasonNumber\x88\x01\x01B\x10\n" +
+	"\x0e_season_number\"H\n" +
 	"\x11GetImagesResponse\x123\n" +
 	"\x06images\x18\x01 \x03(\v2\x1b.silo.plugin.v1.ImageRecordR\x06images\"F\n" +
 	"\x16ResolveImageURLRequest\x12\x12\n" +
@@ -2383,6 +2396,7 @@ func file_silo_plugin_v1_metadata_provider_proto_init() {
 	if File_silo_plugin_v1_metadata_provider_proto != nil {
 		return
 	}
+	file_silo_plugin_v1_metadata_provider_proto_msgTypes[19].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

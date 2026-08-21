@@ -124,6 +124,11 @@ func TestMetadataProviderRequestDescriptors_IncludeProviderContext(t *testing.T)
 			message:   &GetImagesRequest{},
 		},
 		{
+			name:      "GetImagesRequest season_number",
+			fieldName: "season_number",
+			message:   &GetImagesRequest{},
+		},
+		{
 			name:      "SearchMetadataRequest language",
 			fieldName: "language",
 			message:   &SearchMetadataRequest{},
@@ -146,6 +151,28 @@ func TestMetadataProviderRequestDescriptors_IncludeProviderContext(t *testing.T)
 				t.Fatalf("%s descriptor is missing %s", tt.name, tt.fieldName)
 			}
 		})
+	}
+}
+
+func TestGetImagesRequest_SeasonNumberPreservesPresenceAndSpecials(t *testing.T) {
+	seasonZero := int32(0)
+	payload, err := proto.Marshal(&GetImagesRequest{SeasonNumber: &seasonZero})
+	if err != nil {
+		t.Fatalf("marshal request: %v", err)
+	}
+
+	var decoded GetImagesRequest
+	if err := proto.Unmarshal(payload, &decoded); err != nil {
+		t.Fatalf("unmarshal request: %v", err)
+	}
+	if decoded.SeasonNumber == nil {
+		t.Fatal("season_number presence was lost for Specials")
+	}
+	if decoded.GetSeasonNumber() != 0 {
+		t.Fatalf("season_number = %d, want 0", decoded.GetSeasonNumber())
+	}
+	if (&GetImagesRequest{}).SeasonNumber != nil {
+		t.Fatal("season_number should be absent for item-level image requests")
 	}
 }
 
