@@ -229,6 +229,8 @@ message ImageRecord {
   int32 width = 4;
   int32 height = 5;
   google.protobuf.Struct metadata = 6;
+  // Present only when the image is confirmed to belong to one exact season.
+  optional int32 season_number = 7;
 }
 
 message GetImagesRequest {
@@ -236,6 +238,10 @@ message GetImagesRequest {
   string item_type = 2;
   google.protobuf.Struct provider_ids = 3;
   string language = 4;
+  // Present only when requesting artwork for a specific TV season.
+  // Season zero represents Specials, so presence must not be inferred from
+  // the numeric value.
+  optional int32 season_number = 5;
 }
 
 message GetImagesResponse {
