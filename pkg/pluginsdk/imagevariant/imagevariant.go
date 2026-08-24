@@ -1,11 +1,13 @@
 // Package imagevariant exposes the canonical image-variant hints Silo sends to
 // plugins that resolve image paths into URLs.
 //
-// A variant is a semantic size hint, not an exact pixel contract: the host says
-// roughly how large the image will be rendered and the plugin picks the closest
-// size its upstream offers. Variants travel as plain strings in
+// A variant is a semantic size hint, not an exact pixel contract: the sender
+// says roughly how large the image will be rendered and the resolver picks the
+// closest size its upstream offers. Variants travel as plain strings in
 // ResolveImageURLRequest.variant, ResolveImageURLsRequest.variant, and
-// ResolveCatalogImageURLsRequest.variant. An empty variant means "host default".
+// ResolveCatalogImageURLsRequest.variant. An empty variant uses the receiver's
+// default: the plugin default for the metadata-provider requests and the host
+// default for the RuntimeHost request.
 //
 // Two contract rules govern the vocabulary:
 //
