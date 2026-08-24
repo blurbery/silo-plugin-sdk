@@ -1876,9 +1876,15 @@ func (x *GetImagesResponse) GetImages() []*ImageRecord {
 }
 
 type ResolveImageURLRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Path          string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
-	Variant       string                 `protobuf:"bytes,2,opt,name=variant,proto3" json:"variant,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Path  string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	// Semantic size hint, not an exact pixel contract. Canonical values, smallest
+	// to largest: "card", "featured", "large", "full", "original". Empty means
+	// the plugin default. The vocabulary is open and grows additively, so a
+	// plugin receiving an unknown variant must degrade gracefully to its nearest
+	// supported size and must not return an error. See
+	// pkg/pluginsdk/imagevariant for constants and the full rules.
+	Variant       string `protobuf:"bytes,2,opt,name=variant,proto3" json:"variant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1972,9 +1978,15 @@ func (x *ResolveImageURLResponse) GetUrl() string {
 }
 
 type ResolveImageURLsRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Paths         []string               `protobuf:"bytes,1,rep,name=paths,proto3" json:"paths,omitempty"`
-	Variant       string                 `protobuf:"bytes,2,opt,name=variant,proto3" json:"variant,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Paths []string               `protobuf:"bytes,1,rep,name=paths,proto3" json:"paths,omitempty"`
+	// Semantic size hint applied to every path in this request. Canonical values,
+	// smallest to largest: "card", "featured", "large", "full", "original". Empty
+	// means the plugin default. The vocabulary is open and grows additively, so a
+	// plugin receiving an unknown variant must degrade gracefully to its nearest
+	// supported size and must not return an error. See
+	// pkg/pluginsdk/imagevariant for constants and the full rules.
+	Variant       string `protobuf:"bytes,2,opt,name=variant,proto3" json:"variant,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
