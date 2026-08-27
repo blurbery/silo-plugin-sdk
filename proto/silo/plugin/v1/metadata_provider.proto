@@ -255,6 +255,12 @@ message GetImagesResponse {
 
 message ResolveImageURLRequest {
   string path = 1;
+  // Semantic size hint, not an exact pixel contract. Canonical values, smallest
+  // to largest: "card", "featured", "large", "full", "original". Empty means
+  // the plugin default. The vocabulary is open and grows additively, so a
+  // plugin receiving an unknown variant must degrade gracefully to its nearest
+  // supported size and must not return an error. See
+  // pkg/pluginsdk/imagevariant for constants and the full rules.
   string variant = 2;
 }
 
@@ -264,6 +270,12 @@ message ResolveImageURLResponse {
 
 message ResolveImageURLsRequest {
   repeated string paths = 1;
+  // Semantic size hint applied to every path in this request. Canonical values,
+  // smallest to largest: "card", "featured", "large", "full", "original". Empty
+  // means the plugin default. The vocabulary is open and grows additively, so a
+  // plugin receiving an unknown variant must degrade gracefully to its nearest
+  // supported size and must not return an error. See
+  // pkg/pluginsdk/imagevariant for constants and the full rules.
   string variant = 2;
 }
 
