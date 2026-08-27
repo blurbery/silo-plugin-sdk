@@ -230,6 +230,9 @@ message ImageRecord {
   int32 height = 5;
   google.protobuf.Struct metadata = 6;
   // Present only when the image is confirmed to belong to one exact season.
+  // Season zero represents Specials, so presence must not be inferred from the
+  // numeric value. Plugins should populate this field whenever the season is
+  // known, even when the request was already season-scoped.
   optional int32 season_number = 7;
 }
 
@@ -240,7 +243,9 @@ message GetImagesRequest {
   string language = 4;
   // Present only when requesting artwork for a specific TV season.
   // Season zero represents Specials, so presence must not be inferred from
-  // the numeric value.
+  // the numeric value. This scope is a request, not a guarantee: plugins that
+  // can filter by season should do so, but hosts must verify season attribution
+  // via ImageRecord.season_number rather than assume a filtered response.
   optional int32 season_number = 5;
 }
 
