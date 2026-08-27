@@ -52,6 +52,22 @@ with a `default` arm rather than an exhaustive match, and do not assume the
 constants shipped in any given SDK tag are the complete set. The same rule
 applies to any future open vocabulary added to `v1`.
 
+## Presence-Sensitive Optional Fields
+
+Some contract fields use proto3 `optional` because absence and zero have
+different meanings. Current examples are `WatchSyncEvent.list_position`,
+`GetImagesRequest.season_number`, and `ImageRecord.season_number`.
+
+Consumers must check presence (`nil` pointer in Go or `HasField` in reflective
+APIs), never infer it from the numeric value. Calling
+`GetSeasonNumber() != 0` silently conflates "no season scope" with "Specials
+(season zero) requested."
+
+A season-scoped `GetImagesRequest` is a scope, not a guarantee. Plugins that
+can filter by season should do so, and plugins should populate
+`ImageRecord.season_number` whenever the season is known. Hosts must bucket and
+verify images by the per-image field rather than assume a filtered response.
+
 ## Runtime Compatibility
 
 - `silo_api_version` is the coarse runtime compatibility gate between Silo and a plugin binary.

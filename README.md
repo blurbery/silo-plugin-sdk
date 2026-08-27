@@ -138,6 +138,10 @@ convergent desired-state updates rather than increments. That rule also applies
 to scrobble stops: replaying the same event ID must not create another play.
 For playback events, `completed` is the host's authoritative watched decision;
 plugins must not infer completion from `watch_history_id` or percentage alone.
+Metadata consumers must likewise check optional `season_number` presence: zero
+means Specials, while absence means no season scope. See
+[compatibility guidance](docs/compatibility.md#presence-sensitive-optional-fields)
+for the request and record rules.
 
 Authenticated RPCs receive the same host-owned capability, configuration, and
 credential data through `WatchSyncAuthenticatedContext`. The context exists
