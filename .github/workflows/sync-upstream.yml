@@ -95,3 +95,51 @@ jobs:
             echo
             echo "The fork's main branch was left unchanged. Review the failed step in this run."
           } >> "$GITHUB_STEP_SUMMARY"
+
+
+  mirror-tags:
+    name: Mirror upstream SDK release tags
+    needs: sync
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out the validated fork main branch
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Mirror missing version tags without overwriting fork tags
+        shell: bash
+        run: |
+          set -euo pipefail
+          git remote add upstream "https://github.com/${UPSTREAM_REPOSITORY}.git"
+          git fetch --no-tags origin "+refs/tags/*:refs/tags/origin/*"
+          git fetch --no-tags upstream "+refs/tags/*:refs/tags/upstream/*"
+
+          refspecs=()
+          while IFS= read -r upstream_ref; do
+            tag="${upstream_ref#refs/tags/upstream/}"
+            [[ "${tag}" == v* ]] || continue
+
+            upstream_target="$(git rev-parse "${upstream_ref}^{}")"
+            origin_ref="refs/tags/origin/${tag}"
+            if git show-ref --verify --quiet "${origin_ref}"; then
+              origin_target="$(git rev-parse "${origin_ref}^{}")"
+              if [[ "${upstream_target}" != "${origin_target}" ]]; then
+                echo "::error::Refusing to overwrite fork tag ${tag}; it points to a different commit."
+                exit 1
+              fi
+              continue
+            fi
+
+            refspecs+=("${upstream_ref}:refs/tags/${tag}")
+          done < <(git for-each-ref --format='%(refname)' refs/tags/upstream/)
+
+          if (( ${#refspecs[@]} == 0 )); then
+            echo "All upstream SDK version tags are already present."
+            exit 0
+          fi
+
+          git push --atomic origin "${refspecs[@]}"
